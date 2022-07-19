@@ -2,6 +2,8 @@ package veinminer.utils;
 
 import necesse.level.gameObject.GameObject;
 import necesse.level.maps.Level;
+import veinminer.objects.Coordinate;
+import veinminer.objects.Key;
 
 import java.util.*;
 
@@ -27,8 +29,9 @@ public class BFS {
         int higherY = this.originY + perimeter;
 
         //create all edges in 2 dimensional array, to make it easier to set the neighbors
-        for(int x = lowerX; x <= higherX; x++) {
-            for (int y = lowerY; y <= higherY; y++) {
+        //we always create the graph with a 1 unit parameter to handle neighbors for edge on graph
+        for(int x = lowerX - 1; x <= higherX + 1; x++) {
+            for (int y = lowerY - 1; y <= higherY + 1; y++) {
                 this.allEdges.put(new Key(x, y), new Coordinate(x, y));
             }
         }
@@ -71,11 +74,16 @@ public class BFS {
             Coordinate currentCord = queue.poll();
             if (!currentCord.isVisited()) {
                 currentCord.setVisited(true);
-                GameObject currentGameObject = level.getObject(currentCord.getX(), currentCord.getY());
-                if(currentGameObject.getStringID().equals(matchID)) {
-                    relatedObjs.add(currentCord);
-                    currentCord.setGameObject(currentGameObject);
-                    queue.addAll(currentCord.getNeighbors());
+                try {
+                    GameObject currentGameObject = level.getObject(currentCord.getX(), currentCord.getY());
+                    if(currentGameObject.getStringID().equals(matchID)) {
+                        relatedObjs.add(currentCord);
+                        currentCord.setGameObject(currentGameObject);
+                        currentCord.setID(currentGameObject.getID());
+                        queue.addAll(currentCord.getNeighbors());
+                    }
+                } catch (Exception e) {
+                    System.out.printf("current coordinate does not exist X: %s Y: %s", currentCord.getX(), currentCord.getY());
                 }
             }
         }

@@ -7,10 +7,13 @@ plugins {
 
 project.ext.modID = "trihardest.anotherveinminer" // The unique id of your mod. Must be all lowercase and cannot use special characters.
 project.ext.modName = "AnotherVeinMiner" // The display name of your mod.
-project.ext.modVersion = "1.01" // Your current builds version. Must follow the xx.xx... format.
+project.ext.modVersion = "1.1" // Your current builds version. Must follow the xx.xx... format.
 project.ext.gameVersion = "0.21.23" // The target game version.
 project.ext.modDescription = "a quality of life mining mod" // Short description of what your mod is.
 project.ext.author = "Trihardest" // Your name
+
+// Set to false to disable full decompile, here or as a gradle parameter -PuseDecompiledSources=false
+def useDecompiledSources = true
 
 /**
  * When setting clientside to true, it means servers do not need this mod for clients to connect and vice versa.
@@ -45,6 +48,9 @@ setTargetCompatibility(JavaVersion.VERSION_1_8)
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://maven.fabricmc.net/"
+    }
 }
 
 sourceSets.main.output.resourcesDir = file("build/mod/resources/")
@@ -57,10 +63,40 @@ if (!file(gameDirectory + "/Necesse.jar").exists()) {
     throw new Exception("Could not find game install directory. Make sure it is correct in build.gradle file.")
 }
 
+def decompileDir = "$gameDirectory/decompiled"
+if (project.hasProperty('useDecompiledSources')) {
+    useDecompiledSources = project.property('useDecompiledSources') != 'false'
+}
+
+configurations {
+    runnable { description "For runnable JARs to be ran only on building." }
+    runnablePatch { description "Patches/overrides for runnable JARs." }
+}
+
+sourceSets {
+    runnablePatch {
+        java.srcDir "buildscript/src/patches"
+        compileClasspath += configurations.runnable
+    }
+}
+
 dependencies {
-    implementation files(gameDirectory + "/Necesse.jar")
-    implementation fileTree(gameDirectory + "/lib/")
-    implementation fileTree("./mods/") // Add all mods located in local mods folder
+    compileOnly files(gameDirectory + "/Necesse.jar")
+    compileOnly fileTree(gameDirectory + "/lib/")
+    compileOnly fileTree("./mods/") // Add all mods located in local mods folder
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.9.10")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.9.10")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.10")
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+
+    if (useDecompiledSources && file("$decompileDir/Necesse-sources.jar").exists()) {
+        compileOnly files("$decompileDir/Necesse-sources.jar")
+    } else if (useDecompiledSources) {
+        logger.error("useDecompiledSources is set but is not using decompiled sources.")
+        logger.error("Run the `decompileToSources` Gradle task to do so. ")
+    }
+
+    runnable 'net.fabricmc:fabric-fernflower:1.5.0'
 }
 
 classes.doLast {
@@ -85,6 +121,29 @@ task createAppID {
     doLast {
         new File("steam_appid.txt").text = "1169040"
     }
+}
+
+task decompileToSources(type: JavaExec) {
+    dependsOn compileRunnablePatchJava
+    onlyIf { useDecompiledSources }
+    outputs.upToDateWhen {
+        ant.checksum file: "$gameDirectory/Necesse.jar", todir: gameDirectory, fileext: '.sum'
+        return file("$gameDirectory/Necesse.jar.sum").exists() &&
+                file("$decompileDir/origin.jar.sum").exists() &&
+                file("$gameDirectory/Necesse.jar.sum").text == file("$decompileDir/origin.jar.sum").text
+    }
+    doFirst { mkdir decompileDir }
+    doLast {
+        ant.move file: "$gameDirectory/Necesse.jar.sum", tofile: "$decompileDir/origin.jar.sum", overwrite: true
+        ant.move file: "$decompileDir/Necesse.jar", tofile: "$decompileDir/Necesse-sources.jar", overwrite: true
+    }
+
+    classpath sourceSets.runnablePatch.output, configurations.runnable
+
+    def banner = "/*\n * NOTE: Decompiled Necesse.jar sources for modding use only. Redistribution is strictly prohibited.\n */\n\n\n"
+    // decompiler preferences referred from https://github.com/JetBrains/intellij-community/blob/master/plugins/java-decompiler/plugin/src/org/jetbrains/java/decompiler/IdeaDecompiler.kt
+    main 'org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler'
+    args '-hdc=0', '-dgs=1', '-rsy=1', '-rbr=1', '-nls=1', '-mpm=60', '-vac=1', '-bsm=1', '-dol=1', '-iib=1', '-ind=    ', "-ban=$banner", "$gameDirectory/Necesse.jar", decompileDir
 }
 
 task runClient(type: JavaExec) {
@@ -127,6 +186,7 @@ task buildModJar(type: Jar) {
     group "necesse"
     description "Generates the mod jar into the build folder"
     dependsOn "classes"
+    from {configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 
     // Add mod output
     from sourceSets.main.java.outputDir

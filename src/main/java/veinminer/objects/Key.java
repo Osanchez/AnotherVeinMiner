@@ -1,4 +1,4 @@
-package veinminer.utils;
+package veinminer.objects;
 
 public class Key {
 
