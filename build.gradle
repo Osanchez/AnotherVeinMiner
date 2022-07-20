@@ -12,8 +12,7 @@ project.ext.gameVersion = "0.21.23" // The target game version.
 project.ext.modDescription = "a quality of life mining mod" // Short description of what your mod is.
 project.ext.author = "Trihardest" // Your name
 
-// Set to false to disable full decompile, here or as a gradle parameter -PuseDecompiledSources=false
-def useDecompiledSources = true
+def useDecompiledSources = false
 
 /**
  * When setting clientside to true, it means servers do not need this mod for clients to connect and vice versa.
@@ -84,6 +83,7 @@ dependencies {
     compileOnly files(gameDirectory + "/Necesse.jar")
     compileOnly fileTree(gameDirectory + "/lib/")
     compileOnly fileTree("./mods/") // Add all mods located in local mods folder
+
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.9.10")
     implementation("com.fasterxml.jackson.core:jackson-core:2.9.10")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.9.10")
@@ -141,7 +141,6 @@ task decompileToSources(type: JavaExec) {
     classpath sourceSets.runnablePatch.output, configurations.runnable
 
     def banner = "/*\n * NOTE: Decompiled Necesse.jar sources for modding use only. Redistribution is strictly prohibited.\n */\n\n\n"
-    // decompiler preferences referred from https://github.com/JetBrains/intellij-community/blob/master/plugins/java-decompiler/plugin/src/org/jetbrains/java/decompiler/IdeaDecompiler.kt
     main 'org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler'
     args '-hdc=0', '-dgs=1', '-rsy=1', '-rbr=1', '-nls=1', '-mpm=60', '-vac=1', '-bsm=1', '-dol=1', '-iib=1', '-ind=    ', "-ban=$banner", "$gameDirectory/Necesse.jar", decompileDir
 }

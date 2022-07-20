@@ -11,7 +11,7 @@ public final class Constants {
     public static final ArrayList<String> DEFAULT_ORE_IDS = new ArrayList<>(Arrays.asList(
             "ironorerock", "copperorerock", "goldorerock", "tungstenorerock", "lifequartzrock",
             "ironoresnow", "copperoresnow", "goldoresnow", "frostshardsnow",
-            "copperoresandstone", "goldoresandstone", "quartzsandstone",
+            "ironoresandstone", "copperoresandstone", "goldoresandstone", "quartzsandstone",
             "ironoreswamp", "copperoreswamp", "goldoreswamp", "ivyoreswamp",
             "ironoredeeprock", "copperoredeeprock","goldoredeeprock", "tungstenoredeeprock", "lifequartzdeeprock",
             "ironoredeepsnowrock", "copperoredeepsnowrock", "goldoredeepsnowrock", "tungstenoredeepsnowrock", "lifequartzdeepsnowrock", "glacialoredeepsnowrock",
@@ -21,7 +21,7 @@ public final class Constants {
     public static final String RADIUS_KEY = "radius";
     public static final String ORES_KEY = "ores";
     public static final String MINING_KEY = "key";
-    public static final String DEFAULT_MINING_KEY = "~";
+    public static final String DEFAULT_MINING_KEY = "z";
     public static final String X_KEY = "x";
     public static final String Y_KEY = "y";
     public static final String ID_KEY = "id";

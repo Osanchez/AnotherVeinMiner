@@ -70,6 +70,15 @@ public class BFS {
         Queue<Coordinate> queue = new LinkedList<>();
         queue.add(allEdges.get(new Key(this.originX, this.originY)));
 
+        //always add the origin node and its neighbors to the queue
+        Coordinate originCoord = allEdges.get(new Key(this.originX, this.originY));
+        GameObject originGameObject = level.getObject(originCoord.getX(), originCoord.getY());
+        relatedObjs.add(originCoord);
+        originCoord.setGameObject(originGameObject);
+        originCoord.setID(originGameObject.getID());
+        queue.addAll(originCoord.getNeighbors());
+
+        //BFS
         while(!queue.isEmpty()) {
             Coordinate currentCord = queue.poll();
             if (!currentCord.isVisited()) {
@@ -83,7 +92,7 @@ public class BFS {
                         queue.addAll(currentCord.getNeighbors());
                     }
                 } catch (Exception e) {
-                    System.out.printf("current coordinate does not exist X: %s Y: %s", currentCord.getX(), currentCord.getY());
+                    System.out.printf("Coordinate does not exist X: %s Y: %s", currentCord.getX(), currentCord.getY());
                 }
             }
         }
