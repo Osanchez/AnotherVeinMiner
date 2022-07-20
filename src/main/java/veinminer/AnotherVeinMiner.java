@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 
-import static veinminer.objects.Constants.CONFIG_FILE_PATH;
+import static veinminer.utils.ModMisc.getModVersion;
 
 @ModEntry
 public class AnotherVeinMiner {
@@ -25,14 +25,14 @@ public class AnotherVeinMiner {
 
     public AnotherVeinMiner() {
         readConfigFile();
-        initializeControl();
+        configureMiningControl();
     }
 
     public static void readConfigFile() {
         ConfigParser configReader = new ConfigParser();
         configReadAttempted = true;
         try {
-            modConfig = configReader.parseConfig(CONFIG_FILE_PATH);
+            modConfig = configReader.parseConfig();
             oreIDs = modConfig.getOreIDs();
             radius = modConfig.get_radius();
         } catch (IOException e) {
@@ -40,7 +40,7 @@ public class AnotherVeinMiner {
         }
     }
 
-    public void initializeControl() {
+    public void configureMiningControl() {
         try {
             //get the mining key to use
             Character miningChar = modConfig.get_mining_key();
@@ -57,13 +57,13 @@ public class AnotherVeinMiner {
             SPEED_MINE = (Control) addControlMethod.invoke(null, controlConstructor.newInstance(miningCharKeyCode, "speedmine", 1));
 
         } catch (Exception e) {
-            System.out.println("Could not set fast mining key");
+            System.out.println("Could not create fast mine key bind");
         }
     }
 
     public void init() {
-        System.out.println("Hello world from a mod by Trihardest!");
         PacketRegistry.registerPacket(PacketObjectsDestroyed.class);
+        System.out.printf("AnotherVeinMiner (version %s) by Trihardest Loaded!\n", getModVersion());
     }
 
 }
