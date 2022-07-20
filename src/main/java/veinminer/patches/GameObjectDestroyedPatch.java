@@ -24,11 +24,6 @@ public class GameObjectDestroyedPatch {
 
     @Advice.OnMethodExit
     static void onExit(@Advice.This GameObject gameObject, @Advice.Argument(0) Level level, @Advice.Argument(1) int x, @Advice.Argument(2) int y, @Advice.Argument(3) ServerClient client) {
-
-        for (Control control : Control.getControls()) {
-            System.out.printf("Key Name: %s key Code: %s\n", control.getKeyName(), control.getKey());
-        }
-
         if(client == null) {
             if(AnotherVeinMiner.SPEED_MINE.isDown()) {
                 String objectID = gameObject.getStringID();
