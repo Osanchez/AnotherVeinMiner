@@ -94,10 +94,6 @@ public class PacketObjectsDestroyed extends Packet {
 
     }
 
-    public static void destroyServerGameObject(LevelObject levelObject, ServerClient client, int tileX, int tileY) {
-        //destroy on server
-        levelObject.object.onDestroyed(levelObject.level, tileX, tileY, client, new ArrayList<>());
-    }
 
     public void processServer(NetworkPacket packet, Server server, ServerClient serverClient) {
         ArrayList<Coordinate> destroyOnClient = new ArrayList<>();
@@ -110,13 +106,12 @@ public class PacketObjectsDestroyed extends Packet {
                     LevelObject serverLevelObject = serverClient.getLevel().getLevelObject(tileX, tileY);
                     if (serverLevelObject.object.getID() == tileID && AnotherVeinMiner.oreIDs.contains(serverLevelObject.object.getStringID())) {
                         // remove level object from server
-                        destroyServerGameObject(serverLevelObject, serverClient, tileX, tileY);
+                        onDestroyed(serverLevelObject.object, serverLevelObject.level, tileX, tileY, serverClient, new ArrayList<>());
                         destroyOnClient.add(coordinate);
                     }
                 }
             }
         }
-        //todo, destroy the origin block too
         if(destroyOnClient.size() > 0) {
             server.network.sendToClientsAt(new PacketObjectsDestroyed(destroyOnClient), serverClient.getLevel());
         }

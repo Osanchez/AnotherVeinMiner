@@ -1,6 +1,5 @@
 package veinminer.patches;
 
-import necesse.engine.control.Control;
 import necesse.engine.modLoader.annotations.ModMethodPatch;
 import necesse.engine.network.server.ServerClient;
 import necesse.level.gameObject.GameObject;
@@ -24,7 +23,7 @@ public class GameObjectDestroyedPatch {
 
     @Advice.OnMethodExit
     static void onExit(@Advice.This GameObject gameObject, @Advice.Argument(0) Level level, @Advice.Argument(1) int x, @Advice.Argument(2) int y, @Advice.Argument(3) ServerClient client) {
-        if(client == null) {
+        if(level.isClientLevel()) {
             if(AnotherVeinMiner.SPEED_MINE.isDown()) {
                 String objectID = gameObject.getStringID();
                 if(AnotherVeinMiner.oreIDs.contains(objectID)) {
