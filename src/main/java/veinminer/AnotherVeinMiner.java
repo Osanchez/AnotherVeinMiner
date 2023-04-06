@@ -47,6 +47,9 @@ public class AnotherVeinMiner {
         try {
             //get the mining key to use
             Character miningChar = modConfig.get_mining_key();
+            if (miningChar == null) {
+                SPEED_MINE = null;
+            }
             int miningCharKeyCode = KeyEvent.getExtendedKeyCodeForChar(miningChar);
 
             Class<Control> classObj = Control.class;
