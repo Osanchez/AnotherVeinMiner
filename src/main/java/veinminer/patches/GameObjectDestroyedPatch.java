@@ -24,7 +24,8 @@ public class GameObjectDestroyedPatch {
     @Advice.OnMethodExit
     static void onExit(@Advice.This GameObject gameObject, @Advice.Argument(0) Level level, @Advice.Argument(1) int x, @Advice.Argument(2) int y, @Advice.Argument(3) ServerClient client) {
         if(level.isClientLevel()) {
-            if(AnotherVeinMiner.SPEED_MINE.isDown()) {
+            if (AnotherVeinMiner.SPEED_MINE == null || AnotherVeinMiner.SPEED_MINE.isDown())
+            {
                 String objectID = gameObject.getStringID();
                 if(AnotherVeinMiner.oreIDs.contains(objectID)) {
                     ArrayList<Coordinate> neighboringOres = getNeighboringOres(level, objectID, x, y);
