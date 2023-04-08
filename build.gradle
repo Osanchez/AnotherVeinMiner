@@ -7,7 +7,7 @@ plugins {
 
 project.ext.modID = "trihardest.anotherveinminer" // The unique id of your mod. Must be all lowercase and cannot use special characters.
 project.ext.modName = "AnotherVeinMiner" // The display name of your mod.
-project.ext.modVersion = "1.22" // Your current builds version. Must follow the xx.xx... format.
+project.ext.modVersion = "2.00" // Your current builds version. Must follow the xx.xx... format.
 project.ext.gameVersion = "0.21.29" // The target game version.
 project.ext.modDescription = "a quality of life mining mod" // Short description of what your mod is.
 project.ext.author = "Trihardest" // Your name
@@ -84,19 +84,12 @@ dependencies {
     compileOnly fileTree(gameDirectory + "/lib/")
     compileOnly fileTree("./mods/") // Add all mods located in local mods folder
 
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.9.10")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.9.10")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.10")
-    implementation("com.googlecode.json-simple:json-simple:1.1.1")
-
     if (useDecompiledSources && file("$decompileDir/Necesse-sources.jar").exists()) {
         compileOnly files("$decompileDir/Necesse-sources.jar")
     } else if (useDecompiledSources) {
         logger.error("useDecompiledSources is set but is not using decompiled sources.")
         logger.error("Run the `decompileToSources` Gradle task to do so. ")
     }
-
-    runnable 'net.fabricmc:fabric-fernflower:1.5.0'
 }
 
 classes.doLast {
