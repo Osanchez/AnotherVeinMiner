@@ -1,83 +1,31 @@
 package veinminer.objects;
-
-import necesse.level.gameObject.GameObject;
-import org.json.simple.JSONObject;
-import java.util.LinkedList;
-import java.util.List;
-
 public class Coordinate {
-    private final int x;
-    private final int y;
-    private int id;
-    private boolean visited;
-    private List<Coordinate> neighbors;
-    private GameObject gameObject;
+    public int x;
+    public int y;
+    public int gameID;
 
-    public Coordinate(int x, int y) {
+    public Coordinate(int x, int y, int gameID) {
         this.x = x;
         this.y = y;
-        this.visited = false;
-        this.neighbors = new LinkedList<>();
+        this.gameID = gameID;
     }
 
-    public String getJSON() {
-        JSONObject coordJSON = new JSONObject();
-        coordJSON.put("x", this.getX());
-        coordJSON.put("y", this.getY());
-        coordJSON.put("id", this.getGameObjectID());
-        return coordJSON.toJSONString();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) 
+            return true;
+
+        if (!(o instanceof Coordinate)) 
+            return false;
+
+        Coordinate vector2 = (Coordinate) o;
+        return x == vector2.x && y == vector2.y && gameID == vector2.gameID;
     }
 
-    public int getGameObjectID() {
-        if (this.gameObject != null) {
-            return this.gameObject.getID();
-        } else {
-            return -1;
-        }
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
     }
-
-    public void setID(int id) {
-        this.id = id;
-    }
-
-    public int getID() {
-        return this.id;
-    }
-
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
-    }
-
-    public boolean isVisited() {
-        return this.visited;
-    }
-
-    public void setVisited(boolean visited) {
-        this.visited = visited;
-    }
-
-    public void setGameObject(GameObject gameObject) {
-        this.gameObject = gameObject;
-    }
-
-    public GameObject getGameObject() {
-        return this.gameObject;
-    }
-
-    public List<Coordinate> getNeighbors() {
-        return this.neighbors;
-    }
-
-    public void setNeighbors(List<Coordinate> neighbors) {
-        this.neighbors = neighbors;
-    }
-
-    public void addNeighbor(Coordinate neighbor) {
-        this.neighbors.add(neighbor);
-    }
-
 }
